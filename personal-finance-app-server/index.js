@@ -6,8 +6,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/hello", (request, response) => {
-  response.json({message: "hello world"});
+app.post("/hello", (request, response) => {
+  response.json({message: "hello " + response.body.name});
 }); 
 
 app.listen(8000, () => {
