@@ -8,10 +8,10 @@ axios.defaults.baseURL = 'http://localhost:8000'
 function App() {
   useEffect(() => {
     async function fetch() {
-      const response = await axios.post( '/hello', {name: 'stanimal'});
+      const response = await axios.post( '/create_link_token');
       console.log("response", response.data);
     }
-    fetch()
+    fetch();
   }, []);
 
   return (
