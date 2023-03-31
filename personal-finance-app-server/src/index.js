@@ -1,8 +1,10 @@
-require('dotenv').config()
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config()
+import express from "express";
+import cors from "cors";
+import pkg from 'body-parser';
+const { json } = pkg;
+import { Configuration, PlaidApi, PlaidEnvironments } from 'plaid';
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
@@ -18,7 +20,7 @@ const plaidClient = new PlaidApi(configuration);
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(json());
 
 app.post("/hello", (request, response) => {
   response.json({message: "hello " + request.body.name});
@@ -46,6 +48,32 @@ app.post('/create_link_token', async function (request, response) {
   } catch (error) {
     response.status(500).send("failure");
     // handle error
+  }
+});
+
+app.post('/exchange_public_token', async function (
+  request,
+  response,
+  next,
+) {
+  const publicToken = request.body.public_token;
+  console.log(publicToken)
+  try {
+    const plaidResponse = await plaidClient.itemPublicTokenExchange({
+      public_token: publicToken,
+    });
+
+    // These values should be saved to a persistent database and
+    // associated with the currently signed-in user
+    console.log(plaidResponse)
+    const accessToken = plaidResponse.data.access_token;
+    console.log(accessToken)
+    const itemID = plaidResponse.data.item_id;
+
+    response.json({ accessToken });
+  } catch (error) {
+    // handle error
+    response.status(500).send("failed");
   }
 });
 
