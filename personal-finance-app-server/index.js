@@ -7,7 +7,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/hello", (request, response) => {
-  response.json({message: "hello " + response.body.name});
+  response.json({message: "hello " + request.body.name});
 }); 
 
 app.listen(8000, () => {
